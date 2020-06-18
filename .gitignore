@@ -1,0 +1,9 @@
+logs/
+artifacts/src/vendor/
+artifacts/channel/crypto-config/
+artifacts/src/fabcar/fabcar.tar.gz
+artifacts/channel/genesis.block
+artifacts/channel/mychannel.tx
+artifacts/channel/mychannel.block
+artifacts/channel/Org1MSPanchors.tx
+artifacts/channel/Org2MSPanchors.tx
