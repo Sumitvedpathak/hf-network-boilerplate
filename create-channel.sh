@@ -45,8 +45,9 @@ setGlobalsForPeer1Org2(){
 }
 
 createChannel(){
-    setGlobalsForPeer0Org2
-    
+    rm -rf ./artifacts/channel/${CHANNEL_NAME}.block
+
+    setGlobalsForPeer0Org1
     peer channel create -o localhost:7050 -c $CHANNEL_NAME \
     --ordererTLSHostnameOverride orderer.example.com \
     -f ./artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./artifacts/channel/${CHANNEL_NAME}.block \
