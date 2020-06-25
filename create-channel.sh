@@ -45,13 +45,14 @@ setGlobalsForPeer1Org2(){
 }
 
 createChannel(){
-    rm -rf ./artifacts/channel/${CHANNEL_NAME}.block
+    #rm -rf ./artifacts/channel/${CHANNEL_NAME}.block
 
     setGlobalsForPeer0Org1
     peer channel create -o localhost:7050 -c $CHANNEL_NAME \
     --ordererTLSHostnameOverride orderer.example.com \
     -f ./artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./artifacts/channel/${CHANNEL_NAME}.block \
     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+    chmod -R 777 ./artifacts/channel/crypto-config
 }
 
 removeOldCrypto(){
@@ -78,9 +79,11 @@ joinChannel(){
 }
 
 updateAnchorPeers(){
+    sleep 3
     setGlobalsForPeer0Org1
     peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
     
+    sleep 3
     setGlobalsForPeer0Org2
     peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
     
@@ -89,5 +92,6 @@ updateAnchorPeers(){
 # removeOldCrypto
 
 createChannel
+sleep 3
 joinChannel
 updateAnchorPeers

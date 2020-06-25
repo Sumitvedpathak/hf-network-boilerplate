@@ -23,10 +23,14 @@ configtxgen -profile OrdererGenesis -configPath ./artifacts -channelID $SYS_CHAN
 
 
 # Generate channel configuration block
-configtxgen -profile BasicChannel -configPath ./artifacts -outputCreateChannelTx ./artifacts/channel/mychannel.tx -channelID $CHANNEL_NAME
+configtxgen -profile BasicChannel -configPath ./artifacts -outputCreateChannelTx ./artifacts/channel/$CHANNEL_NAME.tx -channelID $CHANNEL_NAME
 
 echo "#######    Generating anchor peer update for Org1MSP  ##########"
 configtxgen -profile BasicChannel -configPath ./artifacts -outputAnchorPeersUpdate ./artifacts/channel/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
 
 echo "#######    Generating anchor peer update for Org2MSP  ##########"
 configtxgen -profile BasicChannel -configPath ./artifacts -outputAnchorPeersUpdate ./artifacts/channel/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
+
+cd artifactes/channel/
+chmod 777 -R *
+cd ../../
