@@ -1,11 +1,12 @@
+log.txt
 logs/
-artifacts/src/vendor/
-artifacts/channel/crypto-config/
-artifacts/src/fabcar/fabcar.tar.gz
+src/fabcar/go/vendor/
+src/fabcar/go/fabcar.tar.gz
+src/fabcar/fabcar.tar.gz
+src/fabcar.tar.gz
+artifacts/channel/
 artifacts/channel/genesis.block
 artifacts/channel/mychannel.tx
 artifacts/channel/mychannel.block
 artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
-artifacts/src/go.sum
-artifacts/src/fabcar.tar.gz

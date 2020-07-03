@@ -21,6 +21,7 @@ services:
       - ./channel/crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
       - ./channel/crypto-config/peerOrganizations/org1.example.com/tlsca/:/etc/hyperledger/fabric-ca-server-tls
     container_name: ca.org1.example.com
+    hostname: ca.org1.example.com
     networks:
       - test
 
@@ -41,6 +42,7 @@ services:
       - ./channel/crypto-config/peerOrganizations/org2.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
       - ./channel/crypto-config/peerOrganizations/org2.example.com/tlsca/:/etc/hyperledger/fabric-ca-server-tls
     container_name: ca.org2.example.com
+    hostname: ca.org2.example.com
     networks:
       - test
 
@@ -67,7 +69,6 @@ services:
       - ORDERER_METRICS_PROVIDER=prometheus
       - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
       - ORDERER_GENERAL_LISTENPORT=7050
-      - ORDERER_GENERAL_LOGLEVEL=debug 
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
     command: orderer
     ports:
@@ -226,7 +227,6 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
-      - CORE_LOGGING_LEVEL=debug
     depends_on:
       - couchdb0
     ports:
