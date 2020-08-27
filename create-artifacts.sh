@@ -7,7 +7,7 @@
 
 echo "---------------------------Generating Crypto Material for Orderer and Peers Organizations---------------------------"
 #Generate Crypto artifactes for organizations
-cryptogen generate --config=./artifacts/crypto-config.yaml --output=./artifacts/crypto-config/
+cryptogen generate --config=./artifacts/crypto-config.yaml --output=./artifacts/channel/crypto-config/
 
 
 
