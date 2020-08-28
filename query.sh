@@ -45,7 +45,7 @@ setGlobalsForPeer1Org2() {
 chaincodeQuery() {
     echo "---------------------------Quering Chaincode by Peer 0 of Org 1---------------------------"
     
-    setGlobalsForPeer0Org2
+    setGlobalsForPeer0Org1
     peer chaincode list --installed
 
     # Query all cars
