@@ -6,6 +6,7 @@ src/fabcar/fabcar.tar.gz
 src/fabcar.tar.gz
 artifacts/channel/
 artifacts/crypto-config/
+artifacts/org3/crypto-config/
 artifacts/channel/genesis.block
 artifacts/channel/mychannel.tx
 artifacts/channel/mychannel.block
