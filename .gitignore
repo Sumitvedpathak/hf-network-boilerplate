@@ -12,3 +12,6 @@ artifacts/channel/mychannel.tx
 artifacts/channel/mychannel.block
 artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
+artifacts/org3/org3.json
+artifacts/org3/config_block.pb
+artifacts/org3/config.json
