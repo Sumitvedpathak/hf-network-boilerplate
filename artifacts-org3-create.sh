@@ -41,7 +41,7 @@ generateCryptoMaterial(){
     echo "---------------------------Generating Crypto Material for new Organization 3---------------------------"
     cryptogen generate --config=./artifacts/org3/crypto-config-org3.yaml --output=./artifacts/org3/crypto-config/
 }
-generateCryptoMaterial
+# generateCryptoMaterial
 
 generateDefinition(){
     echo "---------------------------Generate JSON configuration file---------------------------"
@@ -50,7 +50,7 @@ generateDefinition(){
     echo $FABRIC_CFG_PATH
     configtxgen -printOrg Org3MSP >./artifacts/org3/org3.json
 }
-generateDefinition
+# generateDefinition
 
 extractConfigBlock(){
     export FABRIC_CFG_PATH=${PWD}/artifacts/config/
@@ -72,34 +72,36 @@ extractConfigBlock(){
 
     echo "---------------------------Convert config protobuff to json---------------------------"
     configtxlator proto_decode --input ./artifacts/org3/config_block.pb \
-    --type common.Block | jq .data.data[0].payload.data.config >./artifacts/org3/config.json
+    --type common.Block | jq .data.data[0].payload.data.config > ./artifacts/org3/config.json
 
     echo "---------------------------Create updated Org3 config json file---------------------------"
-    jq -s '.[0] * {"channel_group":{"groups":{"Application":{"groups": {"Org3MSP":.[1]}}}}}' ./artifacts/org3/config.json ./artifacts/org3/org3.json >./artifacts/org3/org3_config.json
+    jq -s '.[0] * {"channel_group":{"groups":{"Application":{"groups": {"Org3MSP":.[1]}}}}}' ./artifacts/org3/config.json ./artifacts/org3/org3.json > ./artifacts/org3/org3_config.json
 }
-extractConfigBlock
+# extractConfigBlock
 
 createConfigUpdate(){
 
+    CHANNEL="mychannel"
+
     echo "---------------------------Convert main config json to protobuff format---------------------------"
-    configtxlator proto_encode --input ./artifacts/org3/config.json --type common.Config >./artifacts/org3/original_config.pb
+    configtxlator proto_encode --input ./artifacts/org3/config.json --type common.Config > ./artifacts/org3/original_config.pb
 
     echo "---------------------------Convert modified Org3 config json to protobuff format---------------------------"
-    configtxlator proto_encode --input ./artifacts/org3/org3_config.json --type common.Config >./artifacts/org3/modified_config.pb
+    configtxlator proto_encode --input ./artifacts/org3/org3_config.json --type common.Config > ./artifacts/org3/modified_config.pb
 
     echo "---------------------------Merge to protobuff format---------------------------"
-    configtxlator compute_update --channel_id "mychannel" --original ./artifacts/org3/original_config.pb --updated ./artifacts/org3/modified_config.pb >./artifacts/org3/config_update.pb
+    configtxlator compute_update --channel_id $CHANNEL_NAME --original ./artifacts/org3/original_config.pb --updated ./artifacts/org3/modified_config.pb > ./artifacts/org3/config_update.pb
 
     echo "---------------------------Convert Merged protobuff to JSON format---------------------------"
-    configtxlator proto_decode --input ./artifacts/org3/modified_config.pb --type common.ConfigUpdate >./artifacts/org3/modified_config.json
+    configtxlator proto_decode --input ./artifacts/org3/modified_config.pb --type common.ConfigUpdate > ./artifacts/org3/modified_config.json
 
     echo "---------------------------Update wrapper to JSON format---------------------------"
-    echo '{"payload":{"header":{"channel_header":{"channel_id":"'mychannel'", "type":2}},"data":{"config_update":'$(cat ./artifacts/org3/modified_config.json)'}}}' | jq . >./artifacts/org3/envelope.json
+    echo '{"payload":{"header":{"channel_header":{"channel_id":"'$CHANNEL_NAME'", "type":2}},"data":{"config_update":'$(cat ./artifacts/org3/modified_config.json)'}}}' | jq . > ./artifacts/org3/final_envelope.json
 
     echo "---------------------------Convert final json to protobuff format---------------------------"
-    configtxlator proto_encode --input ./artifacts/org3/envelope.json --type common.Envelope >./artifacts/org3/envelope.pb
+    configtxlator proto_encode --input ./artifacts/org3/final_envelope.json --type common.Envelope > ./artifacts/org3/final_envelope.pb
 }
-createConfigUpdate
+# createConfigUpdate
 
 signAndSubmit(){
     export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
@@ -112,7 +114,7 @@ signAndSubmit(){
     export CORE_PEER_ADDRESS=localhost:7051
 
     echo "---------------------------Org1 Signing the block for adding new Org---------------------------"
-    peer channel signconfigtx -f ./artifacts/org3/envelope.pb
+    peer channel signconfigtx -f ./artifacts/org3/final_envelope.pb
 
     export CORE_PEER_LOCALMSPID="Org2MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
@@ -120,8 +122,15 @@ signAndSubmit(){
     export CORE_PEER_ADDRESS=localhost:9051
 
     echo "---------------------------Org2 Signing and Submitting the block for adding new Org to Orderer---------------------------"
-    peer channel update -f ./artifacts/org3/envelope.pb -c ${CHANNEL_NAME} \
+    peer channel update -f ./artifacts/org3/final_envelope.pb -c ${CHANNEL_NAME} \
         -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
         --tls --cafile ${ORDERER_CA}
 }
+# signAndSubmit
+
+
+generateCryptoMaterial
+generateDefinition
+extractConfigBlock
+createConfigUpdate
 signAndSubmit
