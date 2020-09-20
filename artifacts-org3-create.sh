@@ -83,20 +83,23 @@ createConfigUpdate(){
 
     CHANNEL="mychannel"
 
+
+
     echo "---------------------------Convert main config json to protobuff format---------------------------"
     configtxlator proto_encode --input ./artifacts/org3/config.json --type common.Config > ./artifacts/org3/original_config.pb
 
     echo "---------------------------Convert modified Org3 config json to protobuff format---------------------------"
     configtxlator proto_encode --input ./artifacts/org3/org3_config.json --type common.Config > ./artifacts/org3/modified_config.pb
 
+    echo $CHANNEL_NAME
     echo "---------------------------Merge to protobuff format---------------------------"
     configtxlator compute_update --channel_id $CHANNEL_NAME --original ./artifacts/org3/original_config.pb --updated ./artifacts/org3/modified_config.pb > ./artifacts/org3/config_update.pb
 
     echo "---------------------------Convert Merged protobuff to JSON format---------------------------"
-    configtxlator proto_decode --input ./artifacts/org3/modified_config.pb --type common.ConfigUpdate > ./artifacts/org3/modified_config.json
+    configtxlator proto_decode --input ./artifacts/org3/config_update.pb --type common.ConfigUpdate > ./artifacts/org3/config_update.json
 
     echo "---------------------------Update wrapper to JSON format---------------------------"
-    echo '{"payload":{"header":{"channel_header":{"channel_id":"'$CHANNEL_NAME'", "type":2}},"data":{"config_update":'$(cat ./artifacts/org3/modified_config.json)'}}}' | jq . > ./artifacts/org3/final_envelope.json
+    echo '{"payload":{"header":{"channel_header":{"channel_id":"'$CHANNEL_NAME'", "type":2}},"data":{"config_update":'$(cat ./artifacts/org3/config_update.json)'}}}' | jq . > ./artifacts/org3/final_envelope.json
 
     echo "---------------------------Convert final json to protobuff format---------------------------"
     configtxlator proto_encode --input ./artifacts/org3/final_envelope.json --type common.Envelope > ./artifacts/org3/final_envelope.pb
