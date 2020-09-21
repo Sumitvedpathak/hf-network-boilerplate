@@ -51,5 +51,10 @@ checkPeerChannelConencted(){
     peer channel list
     echo "---------------------Getting Chaincode List----------------------"
     peer chaincode list --installed
+
+    peer channel fetch 0 ./$CHANNEL_NAME.block -o localhost:7050 \
+        --ordererTLSHostnameOverride orderer.example.com \
+        -c $CHANNEL_NAME \
+        --tls --cafile $ORDERER_CA >&log.txt
 }
 checkPeerChannelConencted

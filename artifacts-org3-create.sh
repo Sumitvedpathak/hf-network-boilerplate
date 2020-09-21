@@ -3,7 +3,7 @@ export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/ex
 export PEER0_ORG1_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 export PEER0_ORG2_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
 export PEER0_ORG3_CA=${PWD}/artifacts/org3/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
-export FABRIC_CFG_PATH=${PWD}/artifacts/channel/config/
+export FABRIC_CFG_PATH=${PWD}/artifacts/config/
 
 export CHANNEL_NAME=mychannel
 
@@ -131,9 +131,40 @@ signAndSubmit(){
 }
 # signAndSubmit
 
+BringUpOrg3Containers(){
+    echo "---------------------------Bringing up Org 3 containers---------------------------"
+    docker-compose -f ./artifacts/org3/docker-compose.yaml up -d
+}
+# BringUpOrg3Containers
 
-generateCryptoMaterial
-generateDefinition
-extractConfigBlock
-createConfigUpdate
-signAndSubmit
+
+joinChannel(){
+
+    echo $CHANNEL_NAME
+    echo $ORDERER_CA
+    echo $FABRIC_CFG_PATH
+    setGlobalsForPeer0Org3
+    # peer channel fetch 0 ./channel-artifacts/$CHANNEL_NAME.block -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     -c $CHANNEL_NAME \
+    #     --tls --cafile $ORDERER_CA >&log.txt
+    echo "---------------------------Extract channel Block for Org 3---------------------------"
+    peer channel fetch 0 ./artifacts/org3/$CHANNEL_NAME.block -o localhost:7050 \
+        --ordererTLSHostnameOverride orderer.example.com \
+        -c $CHANNEL_NAME \
+        --tls --cafile $ORDERER_CA >&log.txt
+
+    # echo "---------------------------Org 3 Joining mychannel channel ---------------------------"
+    # peer channel join -b ./artifacts/org3/$CHANNEL_NAME.block
+}
+# joinChannel
+
+
+
+# generateCryptoMaterial
+# generateDefinition
+# extractConfigBlock
+# createConfigUpdate
+# signAndSubmit
+# BringUpOrg3Containers
+joinChannel
