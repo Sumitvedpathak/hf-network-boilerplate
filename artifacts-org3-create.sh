@@ -53,18 +53,9 @@ generateDefinition(){
 # generateDefinition
 
 extractConfigBlock(){
-    export FABRIC_CFG_PATH=${PWD}/artifacts/config/
-    export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-    export CHANNEL_NAME=mychannel
-
-    export CORE_PEER_LOCALMSPID="Org1MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:7051
-    export CORE_PEER_LOCALMSPID="OrdererMSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/users/Admin@example.com/msp
-
+    setGlobalsForOrderer
+    setGlobalsForPeer0Org1
+    
     echo "---------------------------Extract config block from blockchain---------------------------"
     peer channel fetch config ./artifacts/org3/config_block.pb -o localhost:7050 \
     --ordererTLSHostnameOverride orderer.example.com \
@@ -107,22 +98,11 @@ createConfigUpdate(){
 # createConfigUpdate
 
 signAndSubmit(){
-    export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-    export FABRIC_CFG_PATH=${PWD}/artifacts/config/
-    export CHANNEL_NAME=mychannel
-
-    export CORE_PEER_LOCALMSPID="Org1MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:7051
-
+    setGlobalsForPeer0Org1
     echo "---------------------------Org1 Signing the block for adding new Org---------------------------"
     peer channel signconfigtx -f ./artifacts/org3/final_envelope.pb
 
-    export CORE_PEER_LOCALMSPID="Org2MSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
+    setGlobalsForPeer0Org2
 
     echo "---------------------------Org2 Signing and Submitting the block for adding new Org to Orderer---------------------------"
     peer channel update -f ./artifacts/org3/final_envelope.pb -c ${CHANNEL_NAME} \
@@ -131,6 +111,10 @@ signAndSubmit(){
 }
 # signAndSubmit
 
+# removeFiles(){
+    
+# }
+
 BringUpOrg3Containers(){
     echo "---------------------------Bringing up Org 3 containers---------------------------"
     docker-compose -f ./artifacts/org3/docker-compose.yaml up -d
@@ -138,27 +122,26 @@ BringUpOrg3Containers(){
 # BringUpOrg3Containers
 
 
-joinChannel(){
 
-    echo $CHANNEL_NAME
-    echo $ORDERER_CA
-    echo $FABRIC_CFG_PATH
+joinChannel(){
     setGlobalsForPeer0Org3
-    # peer channel fetch 0 ./channel-artifacts/$CHANNEL_NAME.block -o localhost:7050 \
-    #     --ordererTLSHostnameOverride orderer.example.com \
-    #     -c $CHANNEL_NAME \
-    #     --tls --cafile $ORDERER_CA >&log.txt
     echo "---------------------------Extract channel Block for Org 3---------------------------"
     peer channel fetch 0 ./artifacts/org3/$CHANNEL_NAME.block -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         -c $CHANNEL_NAME \
         --tls --cafile $ORDERER_CA >&log.txt
 
-    # echo "---------------------------Org 3 Joining mychannel channel ---------------------------"
-    # peer channel join -b ./artifacts/org3/$CHANNEL_NAME.block
+    echo "---------------------------Org 3 Joining mychannel channel ---------------------------"
+    peer channel join -b ./artifacts/org3/$CHANNEL_NAME.block
 }
 # joinChannel
 
+chaincodeQuery() {
+    echo "---------------------------Quering Chaincode by Peer 0 of Org 2---------------------------"
+    setGlobalsForPeer0Org3
+    CC_NAME="fabcar"
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
+}
 
 
 # generateCryptoMaterial
@@ -168,3 +151,4 @@ joinChannel(){
 # signAndSubmit
 # BringUpOrg3Containers
 joinChannel
+chaincodeQuery
