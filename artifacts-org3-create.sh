@@ -131,24 +131,28 @@ joinChannel(){
         --tls --cafile $ORDERER_CA 
         # >&./artifacts/org3/channel/log.txt
 
-    # echo "---------------------------Org 3 Joining mychannel channel ---------------------------"
-    # peer channel join -b ./artifacts/org3/channel/$CHANNEL_NAME.block
+    sleep 5
+
+    setGlobalsForPeer0Org3
+    echo "---------------------------Org 3 Joining mychannel channel ---------------------------"
+    peer channel join -b ./artifacts/org3/channel/$CHANNEL_NAME.block
 }
-joinChannel
+# joinChannel
 
 chaincodeQuery() {
-    echo "---------------------------Quering Chaincode by Peer 0 of Org 2---------------------------"
+    echo "---------------------------Quering Chaincode by Peer 0 of Org 3---------------------------"
     setGlobalsForPeer0Org3
     CC_NAME="fabcar"
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
 }
-
-
-# generateCryptoMaterial
-# generateDefinition
-# extractConfigBlock
-# createConfigUpdate
-# signAndSubmit
-# BringUpOrg3Containers
-# joinChannel
 # chaincodeQuery
+
+# # # # # # generateCryptoMaterial
+# # # # # # generateDefinition
+# # # # # # extractConfigBlock
+# # # # # # createConfigUpdate
+signAndSubmit
+BringUpOrg3Containers
+joinChannel
+sleep 5
+chaincodeQuery
