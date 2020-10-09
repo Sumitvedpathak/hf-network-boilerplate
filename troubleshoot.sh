@@ -54,17 +54,20 @@ setGlobalsForPeer0Org3() {
 
 checkPeerChannelConencted(){
     setGlobalsForPeer0Org3
-    # echo "---------------------Getting Channel Info----------------------"
-    # peer channel getinfo -c $CHANNEL_NAME
-    # echo "---------------------Getting Channel List----------------------"
-    # peer channel list
-    # echo "---------------------Getting Chaincode List----------------------"
-    # peer chaincode list --installed
+    echo "---------------------Getting Channel Info----------------------"
+    peer channel getinfo -c $CHANNEL_NAME
+    echo "---------------------Getting Channel List----------------------"
+    peer channel list
+    echo "---------------------Getting Chaincode List----------------------"
+    peer chaincode list --installed
 
-    peer channel fetch 0 ./$CHANNEL_NAME.block -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        -c $CHANNEL_NAME \
-        --tls --cafile $ORDERER_CA 
-        # >&log.txt
+    echo "---------------------Get installed chaincode----------------------"
+    peer lifecycle chaincode queryinstalled
+
+    # peer channel fetch 0 ./$CHANNEL_NAME.block -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     -c $CHANNEL_NAME \
+    #     --tls --cafile $ORDERER_CA 
+    #     # >&log.txt
 }
 checkPeerChannelConencted

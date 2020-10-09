@@ -4,6 +4,10 @@ docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
 echo "#######  Prune docker volumes  ##########"
 docker volume prune
 
+echo "#######  Removing docker Networks  ##########"
+docker network rm artifacts_test
+docker network rm org3_test
+
 # echo "#######    Clearing all crypto material for Network  ##########"
 # # Delete existing artifacts
 # rm -rf ./artifacts/crypto-config

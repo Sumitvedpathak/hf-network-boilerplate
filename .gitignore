@@ -13,3 +13,5 @@ artifacts/channel/mychannel.tx
 artifacts/channel/mychannel.block
 artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
+mychannel.block
+peerlog.txt

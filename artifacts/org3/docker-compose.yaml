@@ -48,13 +48,20 @@ services:
 
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
 
+      # - CORE_PEER_ID=peer0.org3.example.com
+      # - CORE_PEER_ADDRESS=peer0.org3.example.com:11051
+      # - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      # - CORE_PEER_CHAINCODEADDRESS=peer0.org3.example.com:11052
+      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
+      # - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org3.example.com:11051
       - CORE_PEER_ID=peer0.org3.example.com
       - CORE_PEER_ADDRESS=peer0.org3.example.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
       - CORE_PEER_CHAINCODEADDRESS=peer0.org3.example.com:7052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:8051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org3.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org3.example.com:11051
 
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
