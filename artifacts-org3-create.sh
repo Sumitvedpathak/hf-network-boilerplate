@@ -116,7 +116,7 @@ signAndSubmit(){
 
 BringUpOrg3Containers(){
     echo "---------------------------Bringing up Org 3 containers---------------------------"
-    source ${PWD}/artifacts/org3/.env
+    source .env
     docker-compose -f ./artifacts/org3/docker-compose.yaml up -d
 }
 # BringUpOrg3Containers
@@ -148,12 +148,12 @@ chaincodeQuery() {
 }
 # chaincodeQuery
 
-# generateCryptoMaterial
-# generateDefinition
-# extractConfigBlock
-# createConfigUpdate
+generateCryptoMaterial
+generateDefinition
+extractConfigBlock
+createConfigUpdate
 signAndSubmit
 BringUpOrg3Containers
-# joinChannel
-# sleep 5
-# chaincodeQuery
+joinChannel
+sleep 5
+chaincodeQuery
