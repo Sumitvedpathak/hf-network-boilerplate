@@ -1,12 +1,12 @@
 
-export TEMP_FOLDER_PATH=../channel/app-ch/temp
+export TEMP_FOLDER_PATH=./channel/temp
 
 
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/../../../artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export PEER0_ORG1_CA=${PWD}/../../../artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 export PEER0_ORG2_CA=${PWD}/../../../artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/../channel/app-ch/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/channel/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../../artifacts/config/
 
 export CHANNEL_NAME=mychannel
@@ -36,7 +36,7 @@ setGlobalsForPeer0Org2() {
 setGlobalsForPeer0Org3() {
     export CORE_PEER_LOCALMSPID="Org3MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/../channel/app-ch/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/channel/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
 
 }

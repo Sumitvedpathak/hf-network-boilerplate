@@ -1,12 +1,12 @@
 
-export TEMP_FOLDER_PATH=../channel/sys-ch/temp
+export TEMP_FOLDER_PATH=./channel/temp
 
 
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/../../../artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export PEER0_ORG1_CA=${PWD}/../../../artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 export PEER0_ORG2_CA=${PWD}/../../../artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/../channel/sys-ch/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/channel/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../../artifacts/config/
 
 export CHANNEL_NAME=org1-org3-channel
@@ -26,6 +26,13 @@ setGlobalsForPeer0Org1() {
     export CORE_PEER_ADDRESS=localhost:7051
 }
 
+setGlobalsForPeer1Org1() {
+    export CORE_PEER_LOCALMSPID="Org1MSP"
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/../../../artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    export CORE_PEER_ADDRESS=localhost:8051
+}
+
 setGlobalsForPeer0Org2() {
     export CORE_PEER_LOCALMSPID="Org2MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
@@ -37,24 +44,29 @@ setGlobalsForPeer0Org2() {
 setGlobalsForPeer0Org3() {
     export CORE_PEER_LOCALMSPID="Org3MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/../channel/sys-ch/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/channel/crypto-config/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
 
 }
 
-generateArtifacts(){
+generateCryptoMaterial(){
     echo "---------------------------Generating Crypto Material for new Organization 3---------------------------"
-    cryptogen generate --config=./crypto-config.yaml --output=../channel/sys-ch/crypto-config/
+    cryptogen generate --config=./crypto-config.yaml --output=./channel/crypto-config/
+}
 
+# generateCryptoMaterial
+
+generateArtifacts(){
+    
     CHANNEL_NAME="org1-org3-channel"
     echo "---------------------------Generating Channel Artifacts for new Organization 3---------------------------"
-    configtxgen -profile org1-org3-channel -configPath . -outputCreateChannelTx ../channel/sys-ch/org1-org3-channel.tx -channelID $CHANNEL_NAME
+    configtxgen -profile org1-org3-channel -configPath . -outputCreateChannelTx ./channel/org1-org3-channel.tx -channelID $CHANNEL_NAME
 
     echo "---------------------------Generating Anchor Peer updates for Org1---------------------------"
-    configtxgen -profile org1-org3-channel -configPath . -outputAnchorPeersUpdate ../channel/sys-ch/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+    configtxgen -profile org1-org3-channel -configPath . -outputAnchorPeersUpdate ./channel/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
 
     echo "---------------------------Generating Anchor Peer updates for Org3---------------------------"
-    configtxgen -profile org1-org3-channel -configPath . -outputAnchorPeersUpdate ../channel/sys-ch/Org3MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org3MSP
+    configtxgen -profile org1-org3-channel -configPath . -outputAnchorPeersUpdate ./channel/Org3MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org3MSP
 
 }
 # generateArtifacts
@@ -71,7 +83,7 @@ generateDefinition(){
 extractConfigBlock(){
     
     setGlobalsForOrderer
-
+    export FABRIC_CFG_PATH=${PWD}/../../../artifacts/config/
     echo "---------------------------Extract config block from blockchain---------------------------"
     peer channel fetch config $TEMP_FOLDER_PATH/config_block.pb -o localhost:7050 \
     --ordererTLSHostnameOverride orderer.example.com \
@@ -123,6 +135,16 @@ signAndSubmit(){
 }
 # signAndSubmit
 
+createChannel(){
+    setGlobalsForPeer0Org3
+    echo "---------------------------Creating new channel between Org1 and Org3---------------------------"
+    peer channel create -o localhost:7050 -c $CHANNEL_NAME \
+    --ordererTLSHostnameOverride orderer.example.com \
+    -f ./channel/${CHANNEL_NAME}.tx --outputBlock ./channel/${CHANNEL_NAME}.block \
+    --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+}
+
+# createChannel
 
 BringUpOrg3Containers(){
     echo "---------------------------Bringing up Org 3 containers---------------------------"
@@ -131,49 +153,43 @@ BringUpOrg3Containers(){
 }
 # BringUpOrg3Containers
 
-
-createChannel(){
-    setGlobalsForPeer0Org3
-    
-    peer channel create -o localhost:7050 -c $CHANNEL_NAME \
-    --ordererTLSHostnameOverride orderer.example.com \
-    -f ../channel/sys-ch/${CHANNEL_NAME}.tx --outputBlock ../channel/sys-ch//${CHANNEL_NAME}.block \
-    --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
-}
-
-createChannel
-
 joinChannel(){
+     echo "---------------------------Joining Org1 peers to org1-org3-channel---------------------------"
+    setGlobalsForPeer0Org1
+    peer channel join -b ./channel/$CHANNEL_NAME.block
+    
+    sleep 2
+    setGlobalsForPeer1Org1
+    peer channel join -b ./channel/$CHANNEL_NAME.block
+    
+     echo "---------------------------Joining Org3 peers to org1-org3-channel---------------------------"
+    sleep 2
     setGlobalsForPeer0Org3
-    echo "---------------------------Extract channel Block for Org 3---------------------------"
-    peer channel fetch 0 $TEMP_FOLDER_PATH/$CHANNEL_NAME.block -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        -c $CHANNEL_NAME \
-        --tls --cafile $ORDERER_CA 
-        # >&$TEMP_FOLDER_PATH/log.txt
-
-    sleep 5
-
-    setGlobalsForPeer0Org3
-    echo "---------------------------Org 3 Joining mychannel channel ---------------------------"
-    peer channel join -b $TEMP_FOLDER_PATH/$CHANNEL_NAME.block
+    peer channel join -b ./channel/$CHANNEL_NAME.block
 }
 # joinChannel
 
-chaincodeQuery() {
-    echo "---------------------------Quering Chaincode by Peer 0 of Org 3---------------------------"
+updatingAnchorPeers(){
+    echo "---------------------------Update Anchor peer Peer 0 set for Org 1---------------------------"
+    setGlobalsForPeer0Org1
+    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+    -c $CHANNEL_NAME -f ./channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+    
+    echo "---------------------------Update Anchor peer Peer 0 set for Org 3---------------------------"
     setGlobalsForPeer0Org3
-    CC_NAME="fabcar"
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
+    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+    -c $CHANNEL_NAME -f ./channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+    
 }
-# chaincodeQuery
+#updatingAnchorPeers
 
 # generateCryptoMaterial
+# generateArtifacts
 # generateDefinition
 # extractConfigBlock
 # createConfigUpdate
 # signAndSubmit
+# createChannel
 # BringUpOrg3Containers
 # joinChannel
-# sleep 5
-# chaincodeQuery
+# updatingAnchorPeers

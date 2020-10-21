@@ -24,7 +24,7 @@ Organizations:
     - &Org3
         Name: Org3MSP
         ID: Org3MSP
-        MSPDir: ../channel/sys-ch/crypto-config/peerOrganizations/org3.example.com/msp
+        MSPDir: ./channel/crypto-config/peerOrganizations/org3.example.com/msp
         Policies:
             Readers:
                 Type: Signature

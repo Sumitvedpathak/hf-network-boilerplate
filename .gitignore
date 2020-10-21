@@ -13,6 +13,5 @@ artifacts/channel/mychannel.tx
 artifacts/channel/mychannel.block
 artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
-mychannel.block
-peerlog.txt
-artifacts/org3/sys-channel/channel/crypto-config/peerOrganizations/org3.example.com/ca/ca.org3.example.com-cert.pem
+artifacts/org3/app-channel/channel
+artifacts/org3/sys-channel/channel
