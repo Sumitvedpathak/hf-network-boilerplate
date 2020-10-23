@@ -1,5 +1,5 @@
 docker-compose -f ./artifacts/docker-compose.yaml up -d
-sleep 3
+sleep 5
 ./channel-create.sh
-sleep 3
+sleep 5
 ./chaincode-deploy.sh

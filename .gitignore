@@ -15,3 +15,6 @@ artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
 artifacts/org3/app-channel/channel
 artifacts/org3/sys-channel/channel
+artifacts/org3/sys-channel/src/fabcar_org1_org3.tar.gz
+artifacts/org3/sys-channel/src/fabcar/go/vendor
+artifacts/org3/sys-channel/src/fabcar/go/go.sum

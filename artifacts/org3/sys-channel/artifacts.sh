@@ -135,10 +135,17 @@ signAndSubmit(){
 }
 # signAndSubmit
 
+BringUpOrg3Containers(){
+    echo "---------------------------Bringing up Org 3 containers---------------------------"
+    source .env
+    docker-compose -f ./docker-compose.yaml up -d
+}
+# BringUpOrg3Containers
+
 createChannel(){
     setGlobalsForPeer0Org3
     echo "---------------------------Creating new channel between Org1 and Org3---------------------------"
-    peer channel create -o localhost:7050 -c $CHANNEL_NAME \
+     peer channel create -o localhost:7050 -c $CHANNEL_NAME \
     --ordererTLSHostnameOverride orderer.example.com \
     -f ./channel/${CHANNEL_NAME}.tx --outputBlock ./channel/${CHANNEL_NAME}.block \
     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
@@ -146,12 +153,6 @@ createChannel(){
 
 # createChannel
 
-BringUpOrg3Containers(){
-    echo "---------------------------Bringing up Org 3 containers---------------------------"
-    source .env
-    docker-compose -f ./docker-compose.yaml up -d
-}
-# BringUpOrg3Containers
 
 joinChannel(){
      echo "---------------------------Joining Org1 peers to org1-org3-channel---------------------------"
@@ -183,13 +184,16 @@ updatingAnchorPeers(){
 }
 #updatingAnchorPeers
 
-# generateCryptoMaterial
-# generateArtifacts
-# generateDefinition
-# extractConfigBlock
-# createConfigUpdate
-# signAndSubmit
-# createChannel
-# BringUpOrg3Containers
-# joinChannel
-# updatingAnchorPeers
+# # # # generateCryptoMaterial
+# # # # generateArtifacts
+# # # # generateDefinition
+# # # # extractConfigBlock
+# # # # createConfigUpdate
+signAndSubmit
+sleep 5
+BringUpOrg3Containers
+sleep 5
+createChannel
+sleep 5
+joinChannel
+updatingAnchorPeers
