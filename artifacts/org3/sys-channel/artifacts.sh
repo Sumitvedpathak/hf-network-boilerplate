@@ -96,7 +96,8 @@ extractConfigBlock(){
 
     echo "---------------------------Create updated Org3 config json file---------------------------"
     echo "This is the main change where we are adding Org 3 in consortium instead of Application channel"
-    jq -s  '.[0] * {"channel_group":{"groups":{"Consortiums":{"groups":{"SampleConsortium":{"groups": {"Org3MSP":.[1]}}}}}}}'  $TEMP_FOLDER_PATH/config_original.json $TEMP_FOLDER_PATH/org3.json > $TEMP_FOLDER_PATH/org3_modified_config.json
+    jq -s  '.[0] * {"channel_group":{"groups":{"Consortiums":{"groups":{"SampleConsortium":{"groups": {"Org3MSP":.[1]}}}}}}}' \
+     $TEMP_FOLDER_PATH/config_original.json $TEMP_FOLDER_PATH/org3.json > $TEMP_FOLDER_PATH/org3_modified_config.json
 }
 # extractConfigBlock
 
@@ -112,13 +113,15 @@ createConfigUpdate(){
 
     echo $SYSTEM_CHANNEL_NAME
     echo "---------------------------Merge to protobuff format---------------------------"
-    configtxlator compute_update --channel_id $SYSTEM_CHANNEL_NAME --original $TEMP_FOLDER_PATH/config_original.pb --updated $TEMP_FOLDER_PATH/org3_modified_config.pb > $TEMP_FOLDER_PATH/main_updated_config.pb
+    configtxlator compute_update --channel_id $SYSTEM_CHANNEL_NAME --original $TEMP_FOLDER_PATH/config_original.pb \
+    --updated $TEMP_FOLDER_PATH/org3_modified_config.pb > $TEMP_FOLDER_PATH/main_updated_config.pb
 
     echo "---------------------------Convert Merged protobuff to JSON format---------------------------"
     configtxlator proto_decode --input $TEMP_FOLDER_PATH/main_updated_config.pb --type common.ConfigUpdate > $TEMP_FOLDER_PATH/main_updated_config.json
 
     echo "---------------------------Update wrapper to JSON format---------------------------"
-    echo '{"payload":{"header":{"channel_header":{"channel_id":"'$SYSTEM_CHANNEL_NAME'", "type":2}},"data":{"config_update":'$(cat $TEMP_FOLDER_PATH/main_updated_config.json)'}}}' | jq . > $TEMP_FOLDER_PATH/final_envelope.json
+    echo '{"payload":{"header":{"channel_header":{"channel_id":"'$SYSTEM_CHANNEL_NAME'", "type":2}},"data":{"config_update":'$(cat $TEMP_FOLDER_PATH/main_updated_config.json)'}}}' \
+     | jq . > $TEMP_FOLDER_PATH/final_envelope.json
 
     echo "---------------------------Convert final json to protobuff format---------------------------"
     configtxlator proto_encode --input $TEMP_FOLDER_PATH/final_envelope.json --type common.Envelope > $TEMP_FOLDER_PATH/final_envelope.pb
