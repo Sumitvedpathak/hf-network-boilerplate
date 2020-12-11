@@ -19,4 +19,4 @@ artifacts/org3/sys-channel/src/fabcar_org1_org3.tar.gz
 artifacts/org3/sys-channel/src/fabcar/go/vendor
 artifacts/org3/sys-channel/src/fabcar/go/go.sum
 artifacts/orderer/ca/fabric-ca
-artifacts/orderer/channel/crypto-config
+artifacts/orderer/channel
