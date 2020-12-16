@@ -342,8 +342,8 @@ Profiles:
                   ServerTLSCert: ./channel/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
                 # - Host: orderer4.example.com
                 #   Port: 10050
-                #   ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
-                #   ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
+                #   ClientTLSCert: ./channel/crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
+                #   ServerTLSCert: ./channel/crypto-config/ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
                 # - Host: orderer5.example.com
                 #   Port: 11050
                 #   ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt

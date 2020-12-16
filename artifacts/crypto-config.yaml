@@ -17,9 +17,13 @@ OrdererOrgs:
             - "127.0.0.1"
       - Hostname: orderer2
         SANS:
-          - "localhost"
-          - "127.0.0.1"
+            - "localhost"
+            - "127.0.0.1"
       - Hostname: orderer3
+        SANS:
+            - "localhost"
+            - "127.0.0.1"
+      - Hostname: orderer4
         SANS:
             - "localhost"
             - "127.0.0.1"
